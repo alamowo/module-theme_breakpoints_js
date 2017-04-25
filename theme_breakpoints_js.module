@@ -1,0 +1,53 @@
+<?php
+
+use Drupal\Component\Serialization\Json;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function theme_breakpoints_js_page_attachments(array &$page) {
+  /** @var \Drupal\breakpoint\BreakpointManager $breakpointManager */
+  $breakpointManager = \Drupal::service('breakpoint.manager');
+  $breakpoints = [];
+
+  /** @var \Drupal\Core\Theme\ThemeManager $themeManager */
+  $themeManager = \Drupal::service('theme.manager');
+  $activeTheme = $themeManager->getActiveTheme()->getName();
+
+  /** @var \Drupal\breakpoint\BreakpointInterface[] $themeBreakpoints */
+  $themeBreakpoints = $breakpointManager->getBreakpointsByGroup($activeTheme);
+
+  foreach ($themeBreakpoints as $name => $definition) {
+    $breakpoints[] = [
+      'name' => $name,
+      'label' => $definition->getLabel(),
+      'mediaQuery' => $definition->getMediaQuery(),
+      'multipliers' => $definition->getMultipliers(),
+    ];
+  }
+
+  // settings are needed in html head, so we cannot use the default drupal settings,
+  // but have to handle them by ourself
+  $page['#attached']['html_head'][] = [
+    [
+      '#tag' => 'script',
+      '#attributes' => [
+        'type' => 'application/json',
+        'data-theme-breakpoints-js' => 'theme-breakpoints-js',
+      ],
+      '#value' => Json::encode($breakpoints),
+      '#weight' => -101,
+    ],
+    'theme_breakpoints_js',
+  ];
+  $page['#attached']['html_head'][] = [
+    [
+      '#tag' => 'script',
+      '#attributes' => [
+        'src' => '/' . drupal_get_path('module', 'theme_breakpoints_js') . '/js/breakpointsLoader.js',
+      ],
+      '#weight' => -100,
+    ],
+    'theme_breakpoint_loader',
+  ];
+}
