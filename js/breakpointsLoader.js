@@ -25,6 +25,9 @@
       Breakpoints: JSON.parse(settingsElement.textContent),
       getCurrentBreakpoint: function () {
         var breakpoints = window.themeBreakpoints.Breakpoints;
+        if (!Array.isArray(breakpoints) || breakpoints.length === 0) {
+          return false;
+        }
         var current = breakpoints[0];
         for (var i = 1; i < breakpoints.length; i++) {
           var mq = window.matchMedia(breakpoints[i].mediaQuery)
