@@ -16,7 +16,6 @@ function theme_breakpoints_js_page_attachments(array &$page) {
   foreach ($theme_breakpoints as $name => $definition) {
     $breakpoints[] = [
       'name' => $name,
-      'label' => $definition->getLabel(),
       'mediaQuery' => $definition->getMediaQuery(),
       'multipliers' => $definition->getMultipliers(),
     ];
