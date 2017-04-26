@@ -66,16 +66,15 @@ class ThemeBreakpointsJs {
   }
 
   /**
-   * Gets the breakpoints for the theme of the block.
+   * Gets the breakpoints for the a theme name.
    *
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state, from which to extract the theme of the block.
+   * @param string $theme_name
+   *   The theme name, from which to get breakpoints.
    *
    * @return \Drupal\breakpoint\BreakpointInterface[]
    *   The breakpoints.
    */
-  public function getBreakpointsForFormState(FormStateInterface $form_state) {
-    $theme_name = $form_state->get('block_theme');
+  public function getBreakpointsForThemeName($theme_name) {
     $theme = $this->themeInitialization->getActiveThemeByName($theme_name);
     return $this->getThemeBreakpoints($theme);
   }
