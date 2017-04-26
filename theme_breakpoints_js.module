@@ -6,18 +6,14 @@ use Drupal\Component\Serialization\Json;
  * Implements hook_page_attachments().
  */
 function theme_breakpoints_js_page_attachments(array &$page) {
-  /** @var \Drupal\breakpoint\BreakpointManager $breakpointManager */
-  $breakpointManager = \Drupal::service('breakpoint.manager');
   $breakpoints = [];
+  /** @var \Drupal\theme_breakpoints_js\ThemeBreakpointsJs $theme_breakpoints_js */
+  $theme_breakpoints_js = \Drupal::service('theme_breakpoints_js');
 
-  /** @var \Drupal\Core\Theme\ThemeManager $themeManager */
-  $themeManager = \Drupal::service('theme.manager');
-  $activeTheme = $themeManager->getActiveTheme()->getName();
+  /** @var \Drupal\breakpoint\BreakpointInterface[] $theme_breakpoints */
+  $theme_breakpoints = $theme_breakpoints_js->getBreakpointsForActiveTheme();
 
-  /** @var \Drupal\breakpoint\BreakpointInterface[] $themeBreakpoints */
-  $themeBreakpoints = $breakpointManager->getBreakpointsByGroup($activeTheme);
-
-  foreach ($themeBreakpoints as $name => $definition) {
+  foreach ($theme_breakpoints as $name => $definition) {
     $breakpoints[] = [
       'name' => $name,
       'label' => $definition->getLabel(),
