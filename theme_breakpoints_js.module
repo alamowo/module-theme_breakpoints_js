@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Theme Breakpoints for Javascript module file.
+ */
+
 use Drupal\Component\Serialization\Json;
 
 /**
@@ -21,8 +26,8 @@ function theme_breakpoints_js_page_attachments(array &$page) {
     ];
   }
 
-  // settings are needed in html head, so we cannot use the default drupal settings,
-  // but have to handle them by ourself
+  // Settings are needed in html head, so we cannot use
+  // the default drupal settings, but have to handle them by ourself.
   $page['#attached']['html_head'][] = [
     [
       '#tag' => 'script',
