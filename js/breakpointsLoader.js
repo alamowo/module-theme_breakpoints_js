@@ -30,7 +30,7 @@
         }
         var current = breakpoints[0];
         for (var i = 1; i < breakpoints.length; i++) {
-          var mq = window.matchMedia(breakpoints[i].mediaQuery)
+          var mq = window.matchMedia(breakpoints[i].mediaQuery);
           if (mq.matches) {
             current = breakpoints[i];
           }
