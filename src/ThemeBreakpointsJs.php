@@ -3,13 +3,11 @@
 namespace Drupal\theme_breakpoints_js;
 
 use Drupal\breakpoint\BreakpointManagerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Theme\ActiveTheme;
 use Drupal\Core\Theme\ThemeInitialization;
 use Drupal\Core\Theme\ThemeManagerInterface;
 
 /**
- * Class ThemeBreakpointsJs.
+ * The ThemeBreakpointJs service for convenient loading of breakpoints.
  *
  * @package Drupal\theme_breakpoints_js
  */
@@ -39,6 +37,20 @@ class ThemeBreakpointsJs {
   protected $themeInitialization;
 
   /**
+   * A list of currently known active theme objects.
+   *
+   * @var \Drupal\Core\Theme\ActiveTheme[]
+   */
+  protected $activeThemes;
+
+  /**
+   * A list of loaded breakpoints, keyed by theme name.
+   *
+   * @var array
+   */
+  protected $breakpointsByTheme;
+
+  /**
    * ThemeBreakpointsJs constructor.
    *
    * @param \Drupal\breakpoint\BreakpointManagerInterface $breakpoint_manager
@@ -49,70 +61,57 @@ class ThemeBreakpointsJs {
    *   Provides the theme initialization logic.
    */
   public function __construct(BreakpointManagerInterface $breakpoint_manager, ThemeManagerInterface $theme_manager, ThemeInitialization $theme_initialization) {
+    $this->activeThemes = [];
+    $this->breakpointsByTheme = [];
     $this->breakpointManager = $breakpoint_manager;
     $this->themeManager = $theme_manager;
     $this->themeInitialization = $theme_initialization;
   }
 
   /**
-   * Gets the breakpoints for the active theme of the current route.
+   * Gets the defined breakpoints for the active theme of the current route.
    *
    * @return \Drupal\breakpoint\BreakpointInterface[]
    *   The breakpoints.
    */
   public function getBreakpointsForActiveTheme() {
     $theme = $this->themeManager->getActiveTheme();
-    return $this->getThemeBreakpoints($theme);
+    $this->activeThemes[$theme->getName()] = $theme;
+    return $this->getBreakpoints($theme->getName());
   }
 
   /**
-   * Gets the breakpoints for the a theme name.
+   * Returns defined breakpoints for the provided theme.
+   *
+   * When the given theme does not have defined any breakpoints by itself,
+   * the base theme's breakpoint definitions will be loaded instead (if any).
    *
    * @param string $theme_name
-   *   The theme name, from which to get breakpoints.
+   *   The machine name of the theme.
    *
    * @return \Drupal\breakpoint\BreakpointInterface[]
-   *   The breakpoints.
+   *   The breakpoints, keyed by machine name without theme prefix.
    */
-  public function getBreakpointsForThemeName($theme_name) {
-    $theme = $this->themeInitialization->getActiveThemeByName($theme_name);
-    return $this->getThemeBreakpoints($theme);
-  }
+  public function getBreakpoints($theme_name) {
+    if (!isset($this->breakpointsByTheme[$theme_name])) {
+      $theme = !empty($this->activeThemes[$theme_name]) ? $this->activeThemes[$theme_name]
+        : $this->themeInitialization->getActiveThemeByName($theme_name);
+      $base_themes = $theme->getBaseThemes();
+      $theme_candidates = !empty($base_themes) ? array_keys($base_themes) : [];
+      array_unshift($theme_candidates, $theme->getName());
 
-  /**
-   * Gets the breakpoints for the provided theme.
-   *
-   * @param \Drupal\Core\Theme\ActiveTheme $theme
-   *   A theme, from which to extract breakpoints.
-   *
-   * @return \Drupal\breakpoint\BreakpointInterface[]
-   *   The breakpoints.
-   */
-  public function getThemeBreakpoints(ActiveTheme $theme) {
-    $breakpoints_to_return = [];
-
-    $theme_candidates = @array_keys($theme->getBaseThemes());
-    $theme_candidates = $theme_candidates ?: [];
-    array_unshift($theme_candidates, $theme->getName());
-
-    // Load breakpoints for theme.
-    if ($theme_candidates) {
+      $this->breakpointsByTheme[$theme_name] = [];
       foreach ($theme_candidates as $theme_name) {
-        if (($breakpoints = $this->breakpointManager->getBreakpointsByGroup($theme_name))) {
+        if (($breakpoints = $this->breakpointManager->getBreakpointsByGroup($theme_name)) && !empty($breakpoints)) {
+          foreach ($breakpoints as $id => $breakpoint) {
+            $machine_name = preg_replace('/^' . $theme_name . '\./', '', $id);
+            $this->breakpointsByTheme[$theme_name][$machine_name] = $breakpoint;
+          }
           break;
         }
       }
     }
-
-    // Prepare breakpoint names.
-    if (!empty($breakpoints)) {
-
-      foreach ($breakpoints as $id => $breakpoint) {
-        $breakpoints_to_return[preg_replace('/^' . $theme_name . '\./', '', $id)] = $breakpoint;
-      }
-
-    }
-
-    return $breakpoints_to_return;
+    return $this->breakpointsByTheme[$theme_name];
   }
+
 }
