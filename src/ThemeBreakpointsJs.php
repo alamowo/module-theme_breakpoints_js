@@ -96,6 +96,7 @@ class ThemeBreakpointsJs {
     if (!isset($this->breakpointsByTheme[$theme_name])) {
       $theme = !empty($this->activeThemes[$theme_name]) ? $this->activeThemes[$theme_name]
         : $this->themeInitialization->getActiveThemeByName($theme_name);
+      $this->activeThemes[$theme_name] = $theme;
       $base_themes = $theme->getBaseThemes();
       $theme_candidates = !empty($base_themes) ? array_keys($base_themes) : [];
       array_unshift($theme_candidates, $theme->getName());
