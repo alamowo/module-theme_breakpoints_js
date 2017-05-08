@@ -3,4 +3,4 @@ breakpointsLoader:
     js/breakpointsLoader.js: {}
   dependencies:
     - core/jquery
-    - core/drupal
+    - core/drupalSettings
