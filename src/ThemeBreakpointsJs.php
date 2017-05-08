@@ -99,13 +99,13 @@ class ThemeBreakpointsJs {
       $this->activeThemes[$theme_name] = $theme;
       $base_themes = $theme->getBaseThemes();
       $theme_candidates = !empty($base_themes) ? array_keys($base_themes) : [];
-      array_unshift($theme_candidates, $theme->getName());
+      array_unshift($theme_candidates, $theme_name);
 
       $this->breakpointsByTheme[$theme_name] = [];
-      foreach ($theme_candidates as $theme_name) {
-        if (($breakpoints = $this->breakpointManager->getBreakpointsByGroup($theme_name)) && !empty($breakpoints)) {
+      foreach ($theme_candidates as $candidate_name) {
+        if (($breakpoints = $this->breakpointManager->getBreakpointsByGroup($candidate_name)) && !empty($breakpoints)) {
           foreach ($breakpoints as $id => $breakpoint) {
-            $machine_name = preg_replace('/^' . $theme_name . '\./', '', $id);
+            $machine_name = preg_replace('/^' . $candidate_name . '\./', '', $id);
             $this->breakpointsByTheme[$theme_name][$machine_name] = $breakpoint;
           }
           break;
