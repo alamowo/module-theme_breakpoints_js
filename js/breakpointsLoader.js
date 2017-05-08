@@ -39,7 +39,7 @@
           }
         }
         if (breakpointCandidate && breakpointCandidate !== this.currentBreakpoint) {
-          this.currentBreakpoint = breakpointCandidate
+          this.currentBreakpoint = breakpointCandidate;
           triggerBreakpointChange();
         }
       }.bind(this);
