@@ -1,0 +1,6 @@
+breakpointsLoader:
+  js:
+    js/breakpointsLoader.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

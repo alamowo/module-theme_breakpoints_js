@@ -26,28 +26,6 @@ function theme_breakpoints_js_page_attachments(array &$page) {
     ];
   }
 
-  // Settings are needed in html head, so we cannot use
-  // the default drupal settings, but have to handle them by ourself.
-  $page['#attached']['html_head'][] = [
-    [
-      '#tag' => 'script',
-      '#attributes' => [
-        'type' => 'application/json',
-        'data-theme-breakpoints-js' => 'theme-breakpoints-js',
-      ],
-      '#value' => Json::encode($breakpoints),
-      '#weight' => -101,
-    ],
-    'theme_breakpoints_js',
-  ];
-  $page['#attached']['html_head'][] = [
-    [
-      '#tag' => 'script',
-      '#attributes' => [
-        'src' => '/' . drupal_get_path('module', 'theme_breakpoints_js') . '/js/breakpointsLoader.js',
-      ],
-      '#weight' => -100,
-    ],
-    'theme_breakpoint_loader',
-  ];
+  $page['#attached']['drupalSettings']['theme_breakpoints'] = Json::encode($breakpoints);
+  $page['#attached']['library'][] = 'theme_breakpoints_js/breakpointsLoader';
 }
