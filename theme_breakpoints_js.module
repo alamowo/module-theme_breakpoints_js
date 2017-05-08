@@ -40,14 +40,5 @@ function theme_breakpoints_js_page_attachments(array &$page) {
     ],
     'theme_breakpoints_js',
   ];
-  $page['#attached']['html_head'][] = [
-    [
-      '#tag' => 'script',
-      '#attributes' => [
-        'src' => '/' . drupal_get_path('module', 'theme_breakpoints_js') . '/js/breakpointsLoader.js',
-      ],
-      '#weight' => -100,
-    ],
-    'theme_breakpoint_loader',
-  ];
+  $page['#attached']['library'][] = 'theme_breakpoints_js/breakpointsLoader';
 }
