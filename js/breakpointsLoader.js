@@ -52,6 +52,9 @@
         var currentBreakpoint = false;
         var mqls = [];
         for (var i = 0; i < breakpoints.length; i++) {
+          if (breakpoints[i].mediaQuery != '') {
+            breakpoints[i].mediaQuery = '(min-width: 0em)';
+          }
           var mql = window.matchMedia(breakpoints[i].mediaQuery);
           mql.addListener(this.breakpointChangeHandler);
           mqls.push(mql);
